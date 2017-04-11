@@ -3,6 +3,8 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -56,11 +58,32 @@ public class SI extends JFrame {
         setLocationRelativeTo(null);
         checkWindow();
 
-        // panel.timer.stop();
-        // pause.setEnabled(false);
-        // resume.setEnabled(false);
+//        panel.timer.stop();
+//        pause.setEnabled(false);
+//        resume.setEnabled(false);
+//        
+//        addKeyListener(new KeyListener() {
+//            @Override
+//            public void keyPressed(KeyEvent e) {
+//                switch (e.getKeyCode()) {
+//                    case KeyEvent.VK_ENTER:
+//                        panel.timer.start();
+//                        break;
+//                }
+//            }
+//            public void keyReleased(KeyEvent e) {
+//                
+//            }
+//            @Override
+//            public void keyTyped(KeyEvent e) {
+//                // TODO Auto-generated method stub
+//                
+//            }
+//        });
 
     }
+    
+    
 
     private void newGameButton() {
         newGame = new JMenuItem("New Game");
@@ -128,6 +151,7 @@ public class SI extends JFrame {
                 int result = JOptionPane.showConfirmDialog(null,
                         "Dare to Quit?", "Confirm", JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
+                    panel.timer.stop();
                     dispose();
                 }
             }

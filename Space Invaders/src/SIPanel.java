@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.Timer;
 
 @SuppressWarnings("serial")
@@ -23,7 +24,7 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener{
     private SI si;
     private boolean left, right, fired, missileGone, missileHit, isMovingRight, isMovingLeft, isMovingDown;
     private SIBase SIBase;
-    private SImissile missile;
+    private SImissile bMissile, iMissile;
     private SIship ship;
     public Timer timer;
     private AudioClip laser;
@@ -39,11 +40,20 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener{
         this.si = si;
         si.setSize(500, 450);
         setBackground(Color.BLACK);
+        
+//        JTextArea begin = new JTextArea("Click to begin");
+//        begin.setFont(begin.getFont().deriveFont(32f));
+//        begin.setOpaque(false);
+//        begin.setForeground(Color.green);
+//        begin.setCaretPosition(0);
+//        add(begin);
 
         score = 0;
         SIBase = new SIBase(225, 370, 26, 20);
         base = SIBase.getAliveBase();
         repaint();
+        
+        bMissile = new SImissile(0, -10, 2, 10);
         
         topList = new ArrayList<>();
         midList = new ArrayList<>();
@@ -81,20 +91,21 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener{
                    SIBase.moveXBy(5);
                }
                if(fired) {
-                   missile.moveYBy(-5);
-                   missileGone = false;
-                   if(didHit(missile)) {
-                       missileHit = true;
-                       missileGone = true;
+                   if(bMissile.getPosY() <= -10) {
                        fired = false;
-                       repaint();
                    }
-                   if(missile.getPosY() <= -10) {
-                       missileHit = false;
-                       missileGone = true;
-                       fired = false;
+                   else {
+                       bMissile.moveYBy(-5);
+                       if(didHit()) {
+                           fired = false;
+                           bMissile.setPosY(-10);
+                       }
+                       else{ 
+                           fired = true;
+                       }
                    }
                }
+               
                moveDown();
                moveRight();
                moveLeft();
@@ -114,11 +125,13 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener{
                         right = true;
                         break;
                     case KeyEvent.VK_SPACE:
-                        if(missileGone) {
-                            missile = new SImissile(SIBase.getPosX(), SIBase.getPosY(), SIBase.getWidth(), SIBase.getHeight());
+                        if(!fired) {
+                            bMissile.setPosX(SIBase.getPosX());
+                            bMissile.setPosY(SIBase.getPosY());
                             fired = true;
-                            playSound("SIbaseShoot.wav");
+                            playSound("/SIbaseShoot.wav");
                         }
+                        
                 }
                 repaint();
             }
@@ -258,42 +271,42 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener{
         bottomList2.get(i).moveYBy(amount);
     }
     
-    public boolean didHit(SImissile thing) {
-        for(int i = 0; i < bottomInvaders.size(); i++) {
-            if(((SIship)bottomList2.get(i)).wasHit(thing)) {
-                repaint();
+    public boolean didHit() {
+        for(int i = 0; i < bottomList2.size(); i++) {
+            if(((SIship)bottomList2.get(i)).wasHit(bMissile)) {
+                //bottomList2.remove(bottomList2.get(i));
                 return true;
             }
         }
         return false;
     }
     
-//    public SIthing findClosest(SIthing thing) {
-//        int x = thing.getPosX();
-//        int y = thing.getPosY();
-//        
-//        closest = things.get(0);
-//        
-//        min = Math.sqrt(Math.pow(Math.abs(things.get(0).getPosX() - x), 2) + Math.pow(Math.abs(things.get(0).getPosY() - y), 2));
-//        
-//        for(int i = 1; i < things.size(); i++) {
-//            int newX = things.get(i).getPosX();
-//            int newY = things.get(i).getPosY();
-//            hypotenuse = Math.sqrt(Math.pow(Math.abs(newX - x), 2) + Math.pow(Math.abs(newY - y), 2));
-//            if(hypotenuse == Math.min(min, hypotenuse));
-//                closest = things.get(i);
-//                hypotenuse = min;
-//        }
-//        
-//        return closest;
-//    }
+    public SIthing findClosest(SIthing thing) {
+        int x = thing.getPosX();
+        int y = thing.getPosY();
+        
+        closest = things.get(0);
+        
+        min = Math.sqrt(Math.pow(Math.abs(things.get(0).getPosX() - x), 2) + Math.pow(Math.abs(things.get(0).getPosY() - y), 2));
+        
+        for(int i = 1; i < things.size(); i++) {
+            int newX = things.get(i).getPosX();
+            int newY = things.get(i).getPosY();
+            hypotenuse = Math.sqrt(Math.pow(Math.abs(newX - x), 2) + Math.pow(Math.abs(newY - y), 2));
+            if(hypotenuse == Math.min(min, hypotenuse));
+                closest = things.get(i);
+                hypotenuse = min;
+        }
+        
+        return closest;
+    }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         SIBase.paint(g);
-        if(missile != null) {
-            missile.paint(g);
+        if(bMissile != null) {
+            bMissile.paint(g);
         }
         if(count < 40) {
             for(int i = 0; i < bottomInvaders.size(); i++) {
