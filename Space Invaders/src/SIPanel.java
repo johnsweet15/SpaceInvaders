@@ -4,7 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -28,8 +31,7 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
     private int count, missileCount;
     private BufferedImage base;
     private SI si;
-    private boolean left, right, isMovingRight,
-            isMovingLeft, isMovingDown;
+    private boolean left, right, isMovingRight, isMovingLeft, isMovingDown;
     private SIBase SIBase;
     private SImissile bMissile, iMissile, iMissile2, iMissile3;
     public Timer timer;
@@ -46,21 +48,20 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
         si.setSize(500, 450);
         setBackground(Color.BLACK);
         pace = 40;
-        
+
         this.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
         scoreText = new JLabel("Score: " + score);
         scoreText.setFont(scoreText.getFont().deriveFont(12f));
         scoreText.setOpaque(false);
         scoreText.setForeground(Color.green);
-        add(scoreText);
-        
+//        add(scoreText);
+
         gameOver = new JLabel("");
         gameOver.setFont(gameOver.getFont().deriveFont(40f));
         gameOver.setOpaque(false);
         gameOver.setForeground(Color.green);
         add(gameOver);
-
 
         score = 0;
         missileCount = 0;
@@ -94,55 +95,74 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
                 }
                 bottomShips();
                 fireMissiles();
-                if(count % 40 == 0) {
-                    System.out.println(getLowestRow());
+                if (getLowestRow() == 5) {
+                    if (bottomList2.get(0).getPosY() >= 325) {
+                        timer.stop();
+                    }
                 }
+                else if (getLowestRow() == 4) {
+                    if (bottomList.get(0).getPosY() >= 325) {
+                        timer.stop();
+                    }
+                }
+                else if (getLowestRow() == 3) {
+                    if (midList2.get(0).getPosY() >= 325) {
+                        timer.stop();
+                    }
+                }
+                else if (getLowestRow() == 2) {
+                    if (midList.get(0).getPosY() >= 325) {
+                        timer.stop();
+                    }
+                }
+                else if (getLowestRow() == 1) {
+                    if (topList.get(0).getPosY() >= 325) {
+                        timer.stop();
+                    }
+                }
+                // if(count % 40 == 0) {
+                // System.out.println(getLowestRow());
+                // }
                 if (bMissile != null) {
                     bMissile.moveYBy(-5);
                     didHit();
                 }
-                if(bMissile != null && bMissile.getPosY() <= -10) {
+                if (bMissile != null && bMissile.getPosY() <= -10) {
                     bMissile = null;
                 }
                 if (iMissile != null) {
-                    if(count % 2 == 0) {
+                    if (count % 2 == 0) {
                         iMissile.moveYBy(5);
                     }
-                    if(iMissile.getPosY() > 400) {
+                    if (iMissile.getPosY() > 400) {
                         iMissile = null;
                         missileCount--;
                     }
                 }
                 if (iMissile2 != null) {
-                    if(count % 2 == 0) {
+                    if (count % 2 == 0) {
                         iMissile2.moveYBy(5);
                     }
-                    if(iMissile2.getPosY() > 400 && count % 20 == 0) {
+                    if (iMissile2.getPosY() > 400 && count % 20 == 0) {
                         iMissile2 = null;
                         missileCount--;
                     }
                 }
                 if (iMissile3 != null) {
-                    if(count % 2 == 0) {
+                    if (count % 2 == 0) {
                         iMissile3.moveYBy(5);
                     }
-                    if(iMissile3.getPosY() > 400 && count % 30 == 0) {
+                    if (iMissile3.getPosY() > 400 && count % 30 == 0) {
                         iMissile3 = null;
                         missileCount--;
                     }
                 }
-                
 
                 moveRight();
                 moveLeft();
                 moveDown();
                 repaint();
-                
-                if(pace == 0) {
-                    timer.stop();
-                    gameOver.setText("Game Over");
-                }
-                
+
                 count++;
             }
         });
@@ -159,7 +179,8 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
                         break;
                     case KeyEvent.VK_SPACE:
                         if (bMissile == null) {
-                            bMissile = new SImissile(SIBase.getPosX(),  SIBase.getPosY(), 2, 10);
+                            bMissile = new SImissile(SIBase.getPosX(),
+                                    SIBase.getPosY(), 2, 10);
                             playSound("/SIbaseShoot.wav");
                         }
                 }
@@ -222,11 +243,11 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
                 for (int i = 0; i < 10; i++) {
                     moveInvadersY(i, 12);
                 }
-                if(pace >= 4) {
-                    pace = (int)((pace) * .8);
+                if (pace >= 4) {
+                    pace = (int) ((pace) * .8);
                 }
                 isMovingDown = true;
-                //System.out.println(pace);
+                // System.out.println(pace);
             }
             isMovingDown = false;
         }
@@ -240,13 +261,13 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
         bottomList2 = new ArrayList<>();
         bottomInvaders = new ArrayList<>();
         things = new ArrayList<>();
-        
+
         things.addAll(topList);
         things.addAll(midList);
         things.addAll(midList2);
         things.addAll(bottomList);
         things.addAll(bottomList2);
-        
+
         SItop firstTop = new SItop(70, 80, 30, 24);
         topList.add(firstTop);
         for (int i = 1; i < 10; i++) {
@@ -318,7 +339,8 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
 
     public void didHit() {
         for (int i = 0; i < bottomInvaders.size(); i++) {
-            if (bottomInvaders.get(i).getWasHit() == false && bottomInvaders.get(i).wasHit(bMissile)) {
+            if (bottomInvaders.get(i).getWasHit() == false
+                    && bottomInvaders.get(i).wasHit(bMissile)) {
                 bMissile = null;
                 score += bottomInvaders.get(i).updateScore();
                 scoreText.setText("Score: " + score);
@@ -327,38 +349,41 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
             }
         }
     }
-    
+
     public SIinvader aboveInvader(SIinvader invader, int i) {
-        if(topList.contains(invader)) {
+        if (topList.contains(invader)) {
             return topList.get(i);
         }
-        if(midList.contains(invader)) {
+        if (midList.contains(invader)) {
             return topList.get(i);
         }
-        else if(midList2.contains(invader)) {
+        else if (midList2.contains(invader)) {
             return midList.get(i);
         }
-        else if(bottomList.contains(invader)) {
+        else if (bottomList.contains(invader)) {
             return midList2.get(i);
         }
-        else if(bottomList2.contains(invader)) {
+        else if (bottomList2.contains(invader)) {
             return bottomList.get(i);
         }
         return null;
     }
-    
+
     public void bottomShips() {
-        for(int i = 0; i < 10; i++) {
-            if(topList.get(i).getPosY() - 25 == midList.get(i).getPosY()) {
+        for (int i = 0; i < 10; i++) {
+            if (topList.get(i).getPosY() - 25 == midList.get(i).getPosY()) {
                 bottomInvaders.add(topList.get(i));
             }
-            else if(midList.get(i).getPosY() - 25 == midList2.get(i).getPosY()) {
+            else if (midList.get(i).getPosY() - 25 == midList2.get(i)
+                    .getPosY()) {
                 bottomInvaders.add(midList.get(i));
             }
-            else if(midList2.get(i).getPosY() - 25 == bottomList.get(i).getPosY()) {
+            else if (midList2.get(i).getPosY() - 25 == bottomList.get(i)
+                    .getPosY()) {
                 bottomInvaders.add(midList2.get(i));
             }
-            else if(bottomList.get(i).getPosY() - 25 == bottomList2.get(i).getPosY()) {
+            else if (bottomList.get(i).getPosY() - 25 == bottomList2.get(i)
+                    .getPosY()) {
                 bottomInvaders.add(bottomList.get(i));
             }
             else {
@@ -366,44 +391,44 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
             }
         }
     }
-    
+
     public int getLowestRow() {
-        for(int i = 0; i < 10; i++) {
-            if(!(bottomList2.get(i).getWasHit())) {
+        for (int i = 0; i < 10; i++) {
+            if (!(bottomList2.get(i).getWasHit())) {
                 return 5;
             }
         }
-        for(int i = 0; i < 10; i++) {
-            if(!(bottomList.get(i).getWasHit())) {
+        for (int i = 0; i < 10; i++) {
+            if (!(bottomList.get(i).getWasHit())) {
                 return 4;
             }
         }
-        for(int i = 0; i < 10; i++) {
-            if(!(midList2.get(i).getWasHit())) {
+        for (int i = 0; i < 10; i++) {
+            if (!(midList2.get(i).getWasHit())) {
                 return 3;
             }
         }
-        for(int i = 0; i < 10; i++) {
-            if(!(midList.get(i).getWasHit())) {
+        for (int i = 0; i < 10; i++) {
+            if (!(midList.get(i).getWasHit())) {
                 return 2;
             }
         }
-        for(int i = 0; i < 10; i++) {
-            if(!(topList.get(i).getWasHit())) {
+        for (int i = 0; i < 10; i++) {
+            if (!(topList.get(i).getWasHit())) {
                 return 1;
             }
         }
         return 0;
     }
-    
+
     public void getFarthestRight() {
-        
+
     }
-    
+
     public void getFarthestLeft() {
-        
+
     }
-    
+
     public void fireMissiles() {
         Random rand = new Random();
         int a = rand.nextInt(10);
@@ -413,28 +438,56 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
         int chance2 = rand.nextInt(5);
         int chance3 = rand.nextInt(5);
         for (int i = 0; i < bottomInvaders.size(); i++) {
-            if(missileCount <= 3) {
-                if(iMissile == null && chance != 2 && !(bottomInvaders.get(i).getWasHit())) {
-                    iMissile = new SImissile(bottomInvaders.get(a).getPosX(), bottomInvaders.get(a).getPosY(), 2, 10);
+            if (missileCount <= 3) {
+                if (iMissile == null && chance != 2
+                        && !(bottomInvaders.get(a).getWasHit())) {
+                    iMissile = new SImissile(bottomInvaders.get(a).getPosX(),
+                            bottomInvaders.get(a).getPosY(), 2, 10);
                     missileCount++;
                 }
-                if(iMissile2 == null && chance2 != 2 && !(bottomInvaders.get(i).getWasHit())) {
-                    iMissile2 = new SImissile(bottomInvaders.get(b).getPosX(), bottomInvaders.get(b).getPosY(), 2, 10);
+                if (iMissile2 == null && chance2 != 2
+                        && !(bottomInvaders.get(b).getWasHit())) {
+                    iMissile2 = new SImissile(bottomInvaders.get(b).getPosX(),
+                            bottomInvaders.get(b).getPosY(), 2, 10);
                     missileCount++;
                 }
-                if(iMissile3 == null && chance3 != 2 && !(bottomInvaders.get(i).getWasHit())) {
-                    iMissile3 = new SImissile(bottomInvaders.get(c).getPosX(), bottomInvaders.get(c).getPosY(), 2, 10);
+                if (iMissile3 == null && chance3 != 2
+                        && !(bottomInvaders.get(c).getWasHit())) {
+                    iMissile3 = new SImissile(bottomInvaders.get(c).getPosX(),
+                            bottomInvaders.get(c).getPosY(), 2, 10);
                     missileCount++;
                 }
             }
         }
-        
+
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         SIBase.paint(g);
+        if (g instanceof Graphics2D) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            
+            Graphics2D g3 = (Graphics2D) g;
+            g3.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+
+            g2.setFont(new Font("Aerial", Font.PLAIN, 12));
+            g2.setColor(Color.GREEN);
+            g2.drawString("Score: " + score, 420, 20);
+            
+            
+            
+            if (pace == 0) {
+                g3.setFont(new Font("Aerial", Font.PLAIN, 32));
+                g3.setColor(Color.GREEN);
+                g3.drawString("Game Over", 160, 200);
+                //timer.stop();
+            }
+        }
         if (bMissile != null) {
             bMissile.paint(g);
         }
@@ -449,41 +502,41 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
         }
         if (count < 40) {
             for (int i = 0; i < topList.size(); i++) {
-                if(!(topList.get(i).getWasHit())) {
+                if (!(topList.get(i).getWasHit())) {
                     topList.get(i).paint(g);
                 }
-                if(!(midList.get(i).getWasHit())) {
+                if (!(midList.get(i).getWasHit())) {
                     midList.get(i).paint(g);
                 }
-                if(!(midList2.get(i).getWasHit())) {
+                if (!(midList2.get(i).getWasHit())) {
                     midList2.get(i).paint(g);
                 }
-                if(!(bottomList.get(i).getWasHit())) {
+                if (!(bottomList.get(i).getWasHit())) {
                     bottomList.get(i).paint(g);
                 }
-                if(!(bottomList2.get(i).getWasHit())) {
+                if (!(bottomList2.get(i).getWasHit())) {
                     bottomList2.get(i).paint(g);
                 }
-//                if(bottomList2.get(i).getWasHit()) {
-//                    ((SIship)bottomList2.get(i)).paint(g);
-//                }
+                // if(bottomList2.get(i).getWasHit()) {
+                // ((SIship)bottomList2.get(i)).paint(g);
+                // }
             }
         }
         else if (count < 80) {
             for (int i = 0; i < topList.size(); i++) {
-                if(!(topList.get(i).getWasHit())) {
+                if (!(topList.get(i).getWasHit())) {
                     topList.get(i).paint2(g);
                 }
-                if(!(midList.get(i).getWasHit())) {
+                if (!(midList.get(i).getWasHit())) {
                     midList.get(i).paint2(g);
                 }
-                if(!(midList2.get(i).getWasHit())) {
+                if (!(midList2.get(i).getWasHit())) {
                     midList2.get(i).paint2(g);
                 }
-                if(!(bottomList.get(i).getWasHit())) {
+                if (!(bottomList.get(i).getWasHit())) {
                     bottomList.get(i).paint2(g);
                 }
-                if(!(bottomList2.get(i).getWasHit())) {
+                if (!(bottomList2.get(i).getWasHit())) {
                     bottomList2.get(i).paint2(g);
                 }
             }
