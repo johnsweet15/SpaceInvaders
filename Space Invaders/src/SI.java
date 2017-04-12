@@ -75,6 +75,7 @@ public class SI extends JFrame {
                         JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
                     panel.resetRound();
+                    panel.score = 0;
                     pause.setEnabled(true);
                     resume.setEnabled(true);
                 }
