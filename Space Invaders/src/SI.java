@@ -28,7 +28,6 @@ public class SI extends JFrame {
     private JMenuItem pause;
     private JMenuItem resume;
     private JMenu help;
-    private JLabel label;
     private SIPanel panel;
 
     public SI() {
@@ -58,29 +57,6 @@ public class SI extends JFrame {
         setLocationRelativeTo(null);
         checkWindow();
 
-//        panel.timer.stop();
-//        pause.setEnabled(false);
-//        resume.setEnabled(false);
-//        
-//        addKeyListener(new KeyListener() {
-//            @Override
-//            public void keyPressed(KeyEvent e) {
-//                switch (e.getKeyCode()) {
-//                    case KeyEvent.VK_ENTER:
-//                        panel.timer.start();
-//                        break;
-//                }
-//            }
-//            public void keyReleased(KeyEvent e) {
-//                
-//            }
-//            @Override
-//            public void keyTyped(KeyEvent e) {
-//                // TODO Auto-generated method stub
-//                
-//            }
-//        });
-
     }
     
     
@@ -99,7 +75,6 @@ public class SI extends JFrame {
                         JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
                     panel.resetRound();
-                    panel.timer.restart();
                     pause.setEnabled(true);
                     resume.setEnabled(true);
                 }

@@ -23,7 +23,7 @@ public abstract class SIship extends SIthing{
     
     public boolean wasHit(SImissile missile) {
         Rectangle rect1 = new Rectangle(missile.getPosX(), missile.getPosY(), missile.getWidth(), this.getHeight());
-        Rectangle rect2 = new Rectangle(this.getPosX() - (this.getWidth() / 2), this.getPosY() - (this.getHeight() / 2), this.getWidth(), this.getHeight());
+        Rectangle rect2 = new Rectangle(this.getPosX() - (this.getWidth() / 2) + 3, this.getPosY() - (this.getHeight() / 2), this.getWidth(), this.getHeight());
         if(rect1.intersects(rect2)) {
             wasHit = true;
             if(this instanceof SIbottom) {
