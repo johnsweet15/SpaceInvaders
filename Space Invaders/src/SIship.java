@@ -13,10 +13,12 @@ public abstract class SIship extends SIthing{
     private boolean wasHit;
     private AudioClip boom;
     private BufferedImage SIshipHit;
+    private int score;
     
     public SIship(int x, int y, int width, int height) {
         super(x, y, width, height);
         wasHit = false;
+        score = 0;
     }
     
     public boolean wasHit(SImissile missile) {
@@ -24,6 +26,16 @@ public abstract class SIship extends SIthing{
         Rectangle rect2 = new Rectangle(this.getPosX() - (this.getWidth() / 2), this.getPosY() - (this.getHeight() / 2), this.getWidth(), this.getHeight());
         if(rect1.intersects(rect2)) {
             wasHit = true;
+            if(this instanceof SIbottom) {
+                score = 10;
+            }
+            else if(this instanceof SImiddle) {
+                score = 20;
+            }
+            else if(this instanceof SItop) {
+                score = 30;
+            }
+            updateScore();
             shipHit();
             try {
                 SIshipHit = ImageIO.read(getClass().getResourceAsStream("/SIinvaderBlast.gif"));
@@ -35,6 +47,10 @@ public abstract class SIship extends SIthing{
         }
         
         return wasHit;
+    }
+    
+    public int updateScore() {
+        return score;
     }
     
     public boolean getWasHit() {

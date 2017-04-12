@@ -98,10 +98,10 @@ public class SI extends JFrame {
                         "Start a new game?", "Confirm",
                         JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
+                    panel.resetRound();
                     panel.timer.restart();
                     pause.setEnabled(true);
                     resume.setEnabled(true);
-                    panel.resetRound();
                 }
             }
         });
@@ -148,11 +148,15 @@ public class SI extends JFrame {
              * Method called when about exit occurs
              */
             public void actionPerformed(ActionEvent event) {
+                panel.timer.stop();
                 int result = JOptionPane.showConfirmDialog(null,
                         "Dare to Quit?", "Confirm", JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
                     panel.timer.stop();
                     dispose();
+                }
+                else {
+                    panel.timer.start();
                 }
             }
         });
@@ -179,10 +183,15 @@ public class SI extends JFrame {
              * Method called when window close action occurs
              */
             public void windowClosing(WindowEvent arg0) {
+                panel.timer.stop();
                 int result = JOptionPane.showConfirmDialog(null,
                         "Dare to Quit?", "Confirm", JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
+                    panel.timer.stop();
                     dispose();
+                }
+                else {
+                    panel.timer.start();
                 }
             }
 
