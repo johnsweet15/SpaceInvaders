@@ -31,7 +31,8 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
     private int count, missileCount;
     private BufferedImage base;
     private SI si;
-    private boolean left, right, isMovingRight, isMovingLeft, isMovingDown, isHit;
+    private boolean left, right, isMovingRight, isMovingLeft, isMovingDown,
+            isHit, mystery, mysteryMoveLeft, mysteryMoveRight, isPlaced;
     private SIBase SIBase;
     private SImissile bMissile, iMissile, iMissile2, iMissile3;
     public Timer timer;
@@ -75,12 +76,12 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
         isMovingRight = true;
         isMovingLeft = false;
         isMovingDown = false;
-        
-        mysteryShip = new SImystery(-10, 30, 36, 18);
+
+        mysteryShip = new SImystery(-40, 30, 36, 18);
 
         createRound();
 
-        left = right = isHit = false;
+        left = right = isHit = mystery = mysteryMoveLeft = mysteryMoveRight = isPlaced = false;
         setFocusable(true);
         timer = new Timer(10, new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -98,8 +99,8 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
                 }
                 bottomShips();
                 fireMissiles();
-                
-                if(count % 40 == 0) {
+
+                if (count % 40 == 0) {
                     if (getLowestRow() == 5) {
                         if (bottomList2.get(0).getPosY() >= 325) {
                             timer.stop();
@@ -126,7 +127,7 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
                         }
                     }
                 }
-                
+
                 if (bMissile != null) {
                     bMissile.moveYBy(-5);
                     didHit();
@@ -137,7 +138,7 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
                 if (iMissile != null) {
                     if (count % 2 == 0) {
                         iMissile.moveYBy(5);
-                        if(SIBase.wasHit(iMissile)) {
+                        if (SIBase.wasHit(iMissile)) {
                             isHit = true;
                         }
                     }
@@ -149,7 +150,7 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
                 if (iMissile2 != null) {
                     if (count % 2 == 0) {
                         iMissile2.moveYBy(5);
-                        if(SIBase.wasHit(iMissile2)) {
+                        if (SIBase.wasHit(iMissile2)) {
                             isHit = true;
                         }
                     }
@@ -161,7 +162,7 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
                 if (iMissile3 != null) {
                     if (count % 2 == 0) {
                         iMissile3.moveYBy(5);
-                        if(SIBase.wasHit(iMissile3)) {
+                        if (SIBase.wasHit(iMissile3)) {
                             isHit = true;
                         }
                     }
@@ -171,25 +172,61 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
                     }
                 }
                 Random rand = new Random();
-                
-                if(mysteryShip.getPosX() == -10) {
+
+                if (!mystery) {
                     int a = rand.nextInt(1000);
-                    if(a < 1000 && mysteryShip.getPosX() >= -10) {
-                        if(mysteryShip.getPosX() < 485) {
+                    int b = rand.nextInt(2);
+                    if (a < 3) {
+                        playSound("/SImystery.wav");
+                        mystery = true;
+                        isPlaced = false;
+                        if (b == 0) {
+                            mysteryMoveRight = true;
+                        }
+                        else if (b == 1) {
+                            mysteryMoveLeft = true;
+                        }
+                    }
+                    
+                }
+                else if (mystery) {
+                    if (mysteryMoveRight) {
+                        if(isPlaced == false) {
+                            mysteryShip.setPosX(-40);
+                            isPlaced = true;
+                        }
+                        if (mysteryShip.getPosX() <= 500) {
                             mysteryShip.moveXBy(5);
+                            
                         }
                         else {
-                            mysteryShip.setPosX(-10);
+                            mysteryMoveRight = false;
+                            mystery = false;
+                        }
+                    }
+                    else if (mysteryMoveLeft) {
+                        if(isPlaced == false) {
+                            mysteryShip.setPosX(500);
+                            isPlaced = true;
+                        }
+                        if (mysteryShip.getPosX() >= -40) {
+                            mysteryShip.moveXBy(-5);
+                            
+                        }
+                        else {
+                            mysteryMoveLeft = false;
+                            mystery = false;
                         }
                     }
                 }
+
                 moveRight();
                 moveLeft();
                 moveDown();
                 repaint();
                 count++;
-                
-                if(score % 900 == 0 && score != 0) {
+
+                if (score % 900 == 0 && score != 0) {
                     clear();
                     createRound();
                 }
@@ -239,7 +276,8 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
         if (isMovingRight && !isMovingDown) {
             if (count % pace == 0) {
                 for (int i = 0; i <= getFarthestRight(); i++) {
-                    if (bottomInvaders.get(getFarthestRight()).getPosX() >= 465) {
+                    if (bottomInvaders.get(getFarthestRight())
+                            .getPosX() >= 465) {
                         isMovingLeft = true;
                         isMovingRight = false;
                         break;
@@ -267,7 +305,8 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
 
     public void moveDown() {
         if ((isMovingLeft && topList.get(getFarthestLeft()).getPosX() <= 2)
-                || isMovingRight && topList.get(getFarthestRight()).getPosX() >= 465) {
+                || isMovingRight
+                        && topList.get(getFarthestRight()).getPosX() >= 465) {
             if (count % pace == 0) {
                 for (int i = 0; i < 10; i++) {
                     moveInvadersY(i, 12);
@@ -340,6 +379,7 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
         iMissile = null;
         iMissile2 = null;
         iMissile3 = null;
+        mysteryShip.setPosX(-40);
         missileCount = 0;
         SIBase = new SIBase(225, 370, 26, 20);
         isHit = false;
@@ -497,14 +537,6 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
         }
         return mostLeft;
     }
-    
-    public void mysteryShip() {
-        Random rand = new Random();
-        int a = rand.nextInt(1000);
-        if(a < 3) {
-            mysteryShip = new SImystery(-10, 30, 36, 18);
-        }
-    }
 
     public void fireMissiles() {
         Random rand = new Random();
@@ -537,7 +569,7 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
             }
         }
     }
-    
+
     public void clear() {
         topList.clear();
         midList.clear();
@@ -554,8 +586,12 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(mysteryShip != null) {
+        if (!mysteryShip.getWasHit()) {
             mysteryShip.paint(g);
+        }
+        else {
+            score += mysteryShip.updateScore();
+            scoreText.setText("Score: " + score);
         }
         if (bMissile != null) {
             bMissile.paint(g);
@@ -586,9 +622,6 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
                 if (!(bottomList2.get(i).getWasHit())) {
                     bottomList2.get(i).paint(g);
                 }
-//                else {
-//                    bottomList2.get(i).paint3(g);
-//                }
             }
         }
         else if (count < 80) {
@@ -608,16 +641,13 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
                 if (!(bottomList2.get(i).getWasHit())) {
                     bottomList2.get(i).paint2(g);
                 }
-//                else {
-//                    bottomList2.get(i).paint3(g);
-//                }
             }
         }
         else {
             count = 0;
         }
-        
-        if(!isHit && pace != 0) {
+
+        if (!isHit && pace != 0) {
             SIBase.paint(g);
         }
         else {
@@ -626,7 +656,7 @@ public class SIPanel extends JPanel implements ActionListener, KeyListener {
             Graphics2D g3 = (Graphics2D) g;
             g3.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
-            
+
             g3.setFont(new Font("Aerial", Font.PLAIN, 50));
             g3.setColor(Color.GREEN);
             g3.drawString("Game Over", 130, 200);
