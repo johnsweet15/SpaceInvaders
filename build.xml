@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="Space Invaders">
+	<property environment="env" />
+	<property name="target" value="1.8" />
+	<property name="source" value="1.8" />
+	<property name="jarDestination" value="../Space Invaders/spaceinvaders.jar" />
+
+	<target name="init">
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.launch" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="bin" />
+	</target>
+	<target depends="clean" name="cleanall" />
+	<target depends="build-subprojects,build-project" name="build" />
+	<target name="build-subprojects" />
+	<target depends="init" name="build-project">
+		<echo message=" http://ant.project.name} : ${ant.file}" />
+
+	</target>
+
+
+	<jar destfile="${jarDestination}">
+		<fileset dir="../Space Invaders/bin/">
+			<include name="**.class" />
+			<include name="**.wav" />
+			<include name="**.gif" />
+		</fileset>
+
+		<manifest>
+			<attribute name="Main-Class" value="SI" />
+			<section name="Information">
+				<attribute name="Author" value="John Sweet" />
+				<attribute name="Affiliation" value="None" />
+				<attribute name="Date" value="April 12" />
+			</section>
+		</manifest>
+
+	</jar>
+</project>

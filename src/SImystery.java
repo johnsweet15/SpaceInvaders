@@ -22,7 +22,6 @@ public class SImystery extends SIinvader {
 
     @Override
     public void paint(Graphics g) {
-        // TODO Auto-generated method stub
-        
+        g.drawImage(mystery, getPosX(), getPosY(), getWidth(), getHeight(), null);
     }
 }

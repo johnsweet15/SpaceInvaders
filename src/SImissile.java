@@ -11,6 +11,6 @@ public class SImissile extends SIthing {
     
     public void paint(Graphics g) {
         g.setColor(Color.WHITE);
-        g.fillRect(getPosX() + 13, getPosY(), getWidth(), getHeight());
+        g.fillRect(getPosX() + 13, getPosY(), 2, 10);
     }
 }

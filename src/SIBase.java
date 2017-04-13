@@ -32,4 +32,8 @@ public class SIBase extends SIship{
     public void paint(Graphics g) {
         g.drawImage(aliveBase, getPosX(), getPosY(), getWidth(), getHeight(), null);
     }
+    
+    public void paint2(Graphics g) {
+        g.drawImage(deadBase, getPosX(), getPosY(), getWidth(), getHeight(), null);
+    }
 }
