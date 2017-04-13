@@ -5,6 +5,8 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -14,11 +16,17 @@ public abstract class SIship extends SIthing{
     private AudioClip boom;
     private BufferedImage SIshipHit;
     private int score;
+    private static ArrayList<Integer> values;
     
     public SIship(int x, int y, int width, int height) {
         super(x, y, width, height);
         wasHit = false;
         score = 0;
+        values = new ArrayList<>();
+        values.add(50);
+        values.add(100);
+        values.add(150);
+        values.add(300);
     }
     
     public boolean wasHit(SImissile missile) {
@@ -34,6 +42,11 @@ public abstract class SIship extends SIthing{
             }
             else if(this instanceof SItop) {
                 score = 30;
+            }
+            else if(this instanceof SImystery) {
+                Random rand = new Random();
+                int a = rand.nextInt(4);
+                score = values.get(a);
             }
             updateScore();
             shipHit();
@@ -67,8 +80,7 @@ public abstract class SIship extends SIthing{
         playSound("SIshipHit.wav");
     }
     
-    @Override
-    public void paint(Graphics g) {
+    public void paint3(Graphics g) {
         g.drawImage(SIshipHit, getPosX(), getPosY(), getWidth(), getHeight(), null);
     }
 
